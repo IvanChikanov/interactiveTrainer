@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>eom</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+    <script>
+      window.MathJax = {
+      options: {
+        enableMenu: false,
+      },
+      loader:{
+        output: "SVG"
+      },
+      tex:{
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      },
+      svg: {
+        scale: .85,  
+        minScale: .85,                  // smallest scaling factor to use
+        mtextInheritFont: true,       // true to make mtext elements use surrounding font
+        merrorInheritFont: true,
+        mathmlSpacing: false,
+        exFactor: 10,               
+      },
+      chtml: {
+        scale: .85,                      // global scaling factor for all expressions
+        minScale: .85,                  // smallest scaling factor to use
+        mtextInheritFont: true,       // true to make mtext elements use surrounding font
+        merrorInheritFont: true,
+        mathmlSpacing: false,
+        exFactor: 10,   
+      }
+    };
+</script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="./questions.js"></script>
+    <script src="./App.js"></script>
+    <script>
+      var color = "orange"; // замениь значение переменной на цвет соответственно: orange, blue, green, old !
+      var colors = clrs.get(color);
+      var old = false;
+      if(color == "old")
+      {
+        old = true;
+      }
+      var name = "Методы решения показательных неравенств";
+      var desc = "Реши неравенства.";
+      var map = new Map();
+      window.addEventListener("load", ()=>{
+        let style = document.createElement("STYLE");
+        style.innerHTML = `
+                          button{background:${colors.gradient}; font-weight:600;}
+                          button:hover{background:${colors.gradient};}
+                          button:active{background:${colors.secondRgb};}
+                          .popup{background:${colors.gradient};}
+                          input:focus-visible{outline: 2px solid ${colors.rgb}}
+                          .solution{background: white; box-sizing: border-box; border: 2px solid ${colors.rgb};
+                          max-width: none; padding-inline: 3vw; color: ${colors.rgb};}
+                          .solution:hover{border: 2px solid ${colors.secondRgb}; color: ${colors.secondRgb}; background: white;}
+                          .nextButton{background: ${colors.rgb};box-sizing: border-box;border: 2px solid transparent;}
+                          .nextButton:hover{border: 2px solid ${colors.secondRgb}; box-sizing: border-box;background: ${colors.rgb};}
+                          .nextButton:active{border: 2px solid ${colors.rgb  }; box-sizing: border-box;background: ${colors.secondRgb};}`;
+                          
+        document.querySelector("HEAD").appendChild(style);
+        document.querySelector(".flexCenter").style.minHeight = document.documentElement.clientHeight + "px";
+        document.querySelector(".flexCenter").style.background = `url(media/backs/${colors.picture}.png)`;
+        document.getElementById("finger").setAttribute("fill", `${colors.rgb}`);
+        document.querySelector(".cap").style.borderTop = `3px solid ${colors.rgb}`;
+        document.querySelector(".nameField").querySelector("h1").innerText = name;
+        document.querySelector(".cap").querySelector("h3").innerText = desc;
+        document.getElementById("workSpace").style.border = `2px solid ${colors.rgb}`;
+        document.getElementById("workSpace").style.width = (document.querySelector(".cap").clientWidth / 100 * 60)+ "px";
+        App.init(questions);
+      });
+      function LoadQuestion()
+      {
+        let text = document.getElementById("text");
+        let answers = document.getElementById("input");
+        text.innerHTML = `<span>${activeStep[activeQuest].text}</span>`;
+        input.innerHTML = `<span>${activeStep[activeQuest].type}</span>`;
+      }
+      function change(e)
+      {
+        if(map.get(e.target))
+        {
+          map.set(e.target, false);
+          e.target.src = "media/empty.png";
+        }
+        else
+        {
+          map.set(e.target, true);
+          e.target.src = "media/full.png";
+        }
+      }
+      function shPopup(points)
+      {
+        if(points == 100)
+        {
+          finishGame("Ты молодец! Продолжай в том же духе!", "media/high.png");
+        }
+        else if(points >= 50 && points < 100)
+        {
+          finishGame("Ты хорошо усвоил эту тему. Не останавливайся на достигнутом!", "media/middle.png");
+        }
+        else
+        {
+          finishGame("Попробуй пройти тему еще раз. У тебя все обязательно получится!", "media/low.png");
+        }
+      }
+      function check()
+      {
+          let count = map.size;
+          let perc = 0;
+          for(let res of map)
+          {
+            if(res[1])
+            {
+              perc++;
+            }
+          }
+          let result = perc / count * 100;
+          shPopup(result);
+      }
+      function finishGame(text, imageLink)
+      {
+        let back = document.createElement("DIV");
+        back.classList.add("popUpBack");
+        let popup = document.createElement("DIV");
+        popup.classList.add("popup");
+        popup.style = "display:flex; max-width: 60vw; text-align:center;";
+        popup.innerText = text;
+        back.appendChild(popup);
+        let cat = document.createElement("IMG");
+        cat.src = imageLink;
+        cat.style.maxWidth = "200px";
+        cat.style.marginLeft = "20px";
+        popup.appendChild(cat);
+        document.body.appendChild(back);
+      }
+    </script>
+    <style>
+    @font-face 
+    {
+      font-family: 'Inter';
+      src: url(fonts/Inter-V.ttf);
+    }
+    .checkBox
+    {
+      cursor: pointer;
+    }
+    button
+    {
+      color: white;
+      box-shadow: none;
+      border: 3px solid white;
+      max-width: 200px;
+      padding: 8px;
+    }
+    button:hover
+    {
+      box-shadow: none;
+      border: 3px solid white;
+    }
+    button:active
+    {
+      box-shadow: none;
+      border: 3px solid white;
+    }
+    .popup
+    {
+      padding-left: 30px;
+      padding-right: 30px;
+      background: transparent;
+      color: white;
+      font-size: 17pt;
+    }
+    </style>
+</head>
+<body>
+  <div class="flexCenter">
+    <div class="nameField" data-tag="name">
+      <h1 style="font-size: 3rem;"></h1>
+    </div>
+    <div class="cap" data-tag="cap" id="cap">
+      <svg width="50" height="50" viewBox="0 0 294 294" fill="none" xmlns="http://www.w3.org/2000/svg" style="float: left;">
+        <path d="M294 0.0136719H0.283783V293.73H96.0608C205.38 293.73 294 205.11 294 95.7907V0.0136719Z" fill="#FF9432" id="finger"/>
+        <path d="M226.972 44.71L216.861 55.4638" stroke="white" stroke-width="9.5777" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M44.9805 44.71L55.0911 55.4638" stroke="white" stroke-width="9.5777" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M226.972 195.264L216.861 184.51" stroke="white" stroke-width="9.5777" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M44.9805 195.264L55.0911 184.51" stroke="white" stroke-width="9.5777" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M148.275 119.908C148.275 99.6161 148.318 79.3246 148.209 59.0332C148.209 56.6356 149.123 55.5302 151.234 54.7132C158.62 51.8511 165.563 54.7559 166.816 61.3774C167.264 63.7483 166.871 65.7507 164.879 67.641C157.685 74.4493 157.461 85.7965 164.163 92.701C165.973 94.5646 168.041 94.8369 169.705 93.4806C171.368 92.1243 171.346 90.0204 169.803 88.0126C166.17 83.3242 165.798 78.3314 168.769 74.2304C171.565 70.3644 175.969 68.9226 180.805 70.2789C183.376 70.962 185.653 72.434 187.3 74.4773C188.947 76.5207 189.877 79.0271 189.953 81.6261C189.951 82.9563 189.817 84.2832 189.553 85.5883C188.952 88.9898 189.98 90.4903 193.383 91.0243C202.607 92.4714 208.483 97.5069 210.447 105.655C212.389 113.665 208.675 122.871 201.644 127.762C200.298 128.702 199.357 128.59 197.995 127.8C190.062 123.197 180.488 124.035 173.835 129.792C171.696 131.639 171.258 133.658 172.621 135.366C173.983 137.075 176.33 137.187 178.6 135.318C179.977 134.144 181.587 133.261 183.329 132.723C185.072 132.186 186.91 132.006 188.727 132.195C195.013 132.729 198.619 136.888 198.028 143.002C197.557 147.664 195.511 151.546 191.561 154.28C189.165 155.936 188.694 157.708 189.685 160.442C193.378 170.62 184.454 180.878 173.458 179.313C171.34 179.014 170.219 178.246 170.421 175.896C170.761 172.003 170.137 168.271 167.593 165.04C166.298 163.307 164.612 161.887 162.665 160.892C160.719 159.897 158.563 159.352 156.366 159.3C153.986 159.204 152.296 160.613 152.263 162.669C152.23 164.88 153.483 166.076 155.677 166.455C161.449 167.454 163.167 169.659 163.117 175.944C163.079 180.52 160.212 183.655 155.36 184.402C154.73 184.497 154.093 184.542 153.456 184.536C148.625 184.482 148.264 184.119 148.264 179.42L148.275 119.908Z" fill="white"/>
+        <path d="M140.696 52.7221C136.641 51.965 132.546 51.4302 128.43 51.1201C120.798 51.2403 113.247 52.6737 106.125 55.3546C78.0205 65.8474 60.4859 94.7414 64.7806 123.79C66.969 138.667 73.7914 151.269 84.9851 161.612C91.419 167.556 99.254 172.413 105.639 181.99C108.832 191.568 111.773 196.19 112.024 201.146C112.265 205.866 107.117 204.381 112.024 204.338C117.408 204.296 117.286 204.294 122.669 204.246C123.649 204.246 124.628 204.16 125.689 204.107C125.792 203.619 125.863 203.125 125.903 202.628C125.903 182.247 125.89 161.863 125.864 141.476C125.797 140.439 125.394 139.451 124.715 138.651C120.224 133.268 115.584 127.998 111.125 122.594C110.031 121.254 109.079 121.297 107.657 121.879C103.28 123.657 98.9032 125.349 94.4663 127.026C91.7308 128.094 89.7174 127.48 88.8694 125.488C87.9503 123.352 88.9789 121.473 91.7691 120.367C97.2401 118.194 102.793 116.154 108.226 113.863C110.961 112.71 112.822 113.287 114.654 115.465C120.125 122.012 125.831 128.388 131.231 134.999C132.425 136.511 133.111 138.346 133.196 140.253C133.371 151.018 133.283 161.789 133.283 172.559V175.939C140.855 176.366 140.871 170.38 140.855 166.771C140.691 130.46 140.822 94.1487 140.653 57.8377C140.653 57.4105 140.669 53.0852 140.696 52.7221Z" fill="white"/>
+        <rect x="112.024" y="201.146" width="63.8514" height="12.7703" rx="6.38513" stroke="white" stroke-width="6.38514"/>
+        <rect x="112.024" y="213.915" width="63.8514" height="12.7703" rx="6.38513" stroke="white" stroke-width="6.38514"/>
+        <rect x="124.795" y="226.686" width="38.3108" height="12.7703" rx="6.38513" stroke="white" stroke-width="6.38514"/>     
+      </svg>   
+      <h3 style="color: #808080;font-size: 2rem;" id = "step"></h3>
+      <h3 style="font-size:1.5rem;" id = "fText"></h3>
+      <h3 id = "generalDescription" style="font-size: 1.3rem; font-weight: 500;"></h3>
+    </div>
+    <div style="max-width: 60vw; display: flex; flex-direction: column; align-items: center;">
+      <div id = "workSpace" style="display: flex;flex-direction: column; background: rgba(255, 255, 255, 0.7); border-radius: .4rem; padding-inline: 3vw; padding-block: 3vh;">
+        <div id = "text" style="height: 50%;padding: 10px; font-weight: 400; font-size: 1.3rem;"></div>
+        <div id = "input" style="height: 50%;padding: 10px;"></div>
+      </div>
+  <button id = "button" style="padding: 11px;font-size: 14pt;">Проверить</button>
+</div>
+</div>  
+</body>
+</html>
